@@ -17,6 +17,16 @@
         "command": "allay-vscode.helloWorld",
         "title": "Hello World"
       }
+    ],
+    "grammars": [
+      {
+        "scopeName": "markdown.allay.injection",
+        "path": "./syntaxes/allay-injection.tmLanguage.json",
+        "injectTo": [
+          "text.html.markdown",
+          "text.html.basic"
+        ]
+      }
     ]
   },
   "scripts": {
