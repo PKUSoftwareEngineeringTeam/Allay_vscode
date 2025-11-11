@@ -16,6 +16,11 @@
       {
         "command": "allay-vscode.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "allay.preview",
+        "title": "Allay: Open Preview",
+        "icon": "$(eye)"
       }
     ],
     "grammars": [
@@ -27,7 +32,16 @@
           "text.html.basic"
         ]
       }
-    ]
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "allay.preview",
+          "when": "editorLangId == markdown || editorLangId == html",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
