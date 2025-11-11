@@ -41,6 +41,16 @@
           "group": "navigation"
         }
       ]
+    },
+    "configuration": {
+      "title": "Allay",
+      "properties": {
+        "allay.path": {
+          "type": "string",
+          "default": "allay",
+          "description": "The path to the Allay executable file. If you haven't added Allay to your environment variables, please configure this setting."
+        }
+      }
     }
   },
   "scripts": {
