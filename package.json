@@ -16,6 +16,11 @@
       {
         "command": "allay-vscode.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "allay.preview",
+        "title": "Allay: Open Preview",
+        "icon": "$(eye)"
       }
     ],
     "grammars": [
@@ -27,7 +32,26 @@
           "text.html.basic"
         ]
       }
-    ]
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "allay.preview",
+          "when": "editorLangId == markdown || editorLangId == html",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Allay",
+      "properties": {
+        "allay.path": {
+          "type": "string",
+          "default": "allay",
+          "description": "The path to the Allay executable file. If you haven't added Allay to your environment variables, please configure this setting."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
