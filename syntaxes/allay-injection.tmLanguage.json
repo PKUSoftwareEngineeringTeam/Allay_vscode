@@ -1,6 +1,6 @@
 {
     "scopeName": "markdown.allay.injection",
-    "injectionSelector": "L:text.html.markdown, L:text.html.basic",
+    "injectionSelector": "L:text.html.markdown, L:text.html",
     "patterns": [
         { "include": "#command-block" },
         { "include": "#expression-block" },
