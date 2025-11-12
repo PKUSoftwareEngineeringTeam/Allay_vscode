@@ -29,7 +29,7 @@
         "path": "./syntaxes/allay-injection.tmLanguage.json",
         "injectTo": [
           "text.html.markdown",
-          "text.html.basic"
+          "text.html"
         ]
       }
     ],
