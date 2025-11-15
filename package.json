@@ -14,10 +14,6 @@
   "contributes": {
     "commands": [
       {
-        "command": "allay-vscode.helloWorld",
-        "title": "Hello World"
-      },
-      {
         "command": "allay.preview",
         "title": "Allay: Open Preview",
         "icon": "$(eye)"
