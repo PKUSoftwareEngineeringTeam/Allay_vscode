@@ -12,10 +12,6 @@ export function activate(context: vscode.ExtensionContext) {
 	// Create a log output channel
 	logChannel = vscode.window.createOutputChannel('Allay', { log: true });
 
-	const helloCommand = vscode.commands.registerCommand('allay-vscode.helloWorld', () => {
-		vscode.window.showInformationMessage('Hello World from Allay!');
-	});
-
 	const previewCommand = vscode.commands.registerCommand('allay.preview', () => {
 		// Check workspace folder
 		const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -94,7 +90,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	});
 
-	context.subscriptions.push(helloCommand, previewCommand);
+	context.subscriptions.push(previewCommand);
 }
 
 function getWebviewContent(port: number): string {
