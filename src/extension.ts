@@ -113,6 +113,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 function getWebviewContent(port: number): string {
 const url = `http://localhost:${port}`;
+const ipUrl = `http://127.0.0.1:${port}`;
     return `
         <!DOCTYPE html>
         <html lang="en">
@@ -123,7 +124,7 @@ const url = `http://localhost:${port}`;
                 img-src data: https:;
                 script-src 'unsafe-inline';
                 style-src 'unsafe-inline';
-                frame-src ${url};
+                frame-src ${url} ${ipUrl} ;
             ">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Allay Preview</title>
@@ -182,13 +183,16 @@ const url = `http://localhost:${port}`;
                     const forwardButton = document.getElementById('history-forward');
 
                     const targetOrigin = '${url}';
+					const targetIpOrigin = '${ipUrl}';
 
                     backButton.addEventListener('click', () => {
                         iframe.contentWindow.postMessage({ command: 'navigateBack' }, targetOrigin);
+						iframe.contentWindow.postMessage({ command: 'navigateBack' }, targetIpOrigin);
                     });
 
                     forwardButton.addEventListener('click', () => {
                         iframe.contentWindow.postMessage({ command: 'navigateForward' }, targetOrigin);
+						iframe.contentWindow.postMessage({ command: 'navigateForward' }, targetIpOrigin);
                     });
 
 					window.addEventListener('message', event => {
