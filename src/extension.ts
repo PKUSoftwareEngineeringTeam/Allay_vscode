@@ -76,6 +76,24 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showErrorMessage(`Allay error: ${data}`);
 		});
 
+		// Listen message form webview to handle navigation
+		previewPanel.webview.onDidReceiveMessage(
+			async (message) => {
+				switch (message.command)
+				{
+					case 'openExternal':
+						if (message.url) {
+							const uri = vscode.Uri.parse(message.url);
+							await vscode.env.openExternal(uri);
+						}
+						break;
+					// ... more commands later, maybe
+				}
+			},
+			undefined,
+			context.subscriptions
+		);
+
 		// Set the webview panel's HTML to load the Allay server
 		previewPanel.webview.html = getWebviewContent(ALLAY_PORT);
 
@@ -157,6 +175,8 @@ const url = `http://localhost:${port}`;
 
             <script>
                 (function() {
+					const vscode = acquireVsCodeApi();
+
                     const iframe = document.getElementById('content-iframe');
                     const backButton = document.getElementById('history-back');
                     const forwardButton = document.getElementById('history-forward');
@@ -170,6 +190,19 @@ const url = `http://localhost:${port}`;
                     forwardButton.addEventListener('click', () => {
                         iframe.contentWindow.postMessage({ command: 'navigateForward' }, targetOrigin);
                     });
+
+					window.addEventListener('message', event => {
+						if (event.origin !== targetOrigin) {
+							return;
+						}
+						const message = event.data;
+						if (message.command === 'openExternal' && message.url) {
+							vscode.postMessage({ 
+								command: 'openExternal', 
+								url: message.url 
+							});
+						}
+					});
                 }());
             </script>
         </body>
