@@ -110,8 +110,35 @@ const url = `http://localhost:${port}`;
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Allay Preview</title>
             <style>
-                html, body, iframe {
-                    height: 100%;
+                html, body {
+                    height: 100vh;
+                    width: 100%;
+                    margin: 0;
+                    padding: 0;
+                    overflow: hidden;
+                }
+                body {
+                    display: flex;
+                    flex-direction: column;
+                }
+                #toolbar {
+                    flex-shrink: 0;
+                    padding: 4px 8px;
+                    background-color: var(--vscode-sideBar-background);
+                    border-bottom: 1px solid var(--vscode-panel-border);
+                }
+                #toolbar button {
+                    background-color: var(--vscode-button-background);
+                    color: var(--vscode-button-foreground);
+                    border: 1px solid var(--vscode-button-border, transparent);
+                    padding: 4px 8px;
+                    cursor: pointer;
+                }
+                #toolbar button:hover {
+                    background-color: var(--vscode-button-hoverBackground);
+                }
+                iframe {
+                    flex-grow: 1; 
                     width: 100%;
                     margin: 0;
                     padding: 0;
@@ -121,7 +148,30 @@ const url = `http://localhost:${port}`;
             </style>
         </head>
         <body>
-            <iframe src="${url}"></iframe>
+            <div id="toolbar">
+                <button id="history-back"><-</button>
+                <button id="history-forward">-></button>
+            </div>
+            
+            <iframe id="content-iframe" src="${url}"></iframe>
+
+            <script>
+                (function() {
+                    const iframe = document.getElementById('content-iframe');
+                    const backButton = document.getElementById('history-back');
+                    const forwardButton = document.getElementById('history-forward');
+
+                    const targetOrigin = '${url}';
+
+                    backButton.addEventListener('click', () => {
+                        iframe.contentWindow.postMessage({ command: 'navigateBack' }, targetOrigin);
+                    });
+
+                    forwardButton.addEventListener('click', () => {
+                        iframe.contentWindow.postMessage({ command: 'navigateForward' }, targetOrigin);
+                    });
+                }());
+            </script>
         </body>
         </html>
     `;
