@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { ChildProcess, spawn } from 'child_process';
+import { AllayCompletionItemProvider } from './completionProvider';
 
 let serverProcess: ChildProcess | null = null;
 let previewPanel: vscode.WebviewPanel | null = null;
@@ -11,6 +12,21 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Create a log output channel
 	logChannel = vscode.window.createOutputChannel('Allay', { log: true });
+
+	// Register the completion provider for Markdown and HTML files
+    const completionProvider = vscode.languages.registerCompletionItemProvider(
+        ['markdown', 'html'],
+        new AllayCompletionItemProvider(),
+        ' ',  // Triggers general completions after a space
+		'-',  // Triggers command block completion (e.g., "{-")
+		':',  // Triggers tag block completion (e.g., "{:")
+        '<',  // Triggers shortcode opening (e.g., "{<")
+        '/',  // Triggers shortcode closing (e.g., "{</")
+        '.',  // Triggers member access (e.g., "site.")
+        '"',  // Triggers file path completion (e.g., include "...")
+        '$'   // Triggers variable completion inside expressions (e.g., "$var")
+    );
+	context.subscriptions.push(completionProvider);
 
 	const previewCommand = vscode.commands.registerCommand('allay.preview', () => {
 		// Check workspace folder
