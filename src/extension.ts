@@ -76,6 +76,24 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showErrorMessage(`Allay error: ${data}`);
 		});
 
+		// Listen message form webview to handle navigation
+		previewPanel.webview.onDidReceiveMessage(
+			async (message) => {
+				switch (message.command)
+				{
+					case 'openExternal':
+						if (message.url) {
+							const uri = vscode.Uri.parse(message.url);
+							await vscode.env.openExternal(uri);
+						}
+						break;
+					// ... more commands later, maybe
+				}
+			},
+			undefined,
+			context.subscriptions
+		);
+
 		// Set the webview panel's HTML to load the Allay server
 		previewPanel.webview.html = getWebviewContent(ALLAY_PORT);
 
@@ -95,6 +113,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 function getWebviewContent(port: number): string {
 const url = `http://localhost:${port}`;
+const ipUrl = `http://127.0.0.1:${port}`;
     return `
         <!DOCTYPE html>
         <html lang="en">
@@ -105,13 +124,40 @@ const url = `http://localhost:${port}`;
                 img-src data: https:;
                 script-src 'unsafe-inline';
                 style-src 'unsafe-inline';
-                frame-src ${url};
+                frame-src ${url} ${ipUrl} ;
             ">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Allay Preview</title>
             <style>
-                html, body, iframe {
-                    height: 100%;
+                html, body {
+                    height: 100vh;
+                    width: 100%;
+                    margin: 0;
+                    padding: 0;
+                    overflow: hidden;
+                }
+                body {
+                    display: flex;
+                    flex-direction: column;
+                }
+                #toolbar {
+                    flex-shrink: 0;
+                    padding: 4px 8px;
+                    background-color: var(--vscode-sideBar-background);
+                    border-bottom: 1px solid var(--vscode-panel-border);
+                }
+                #toolbar button {
+                    background-color: var(--vscode-button-background);
+                    color: var(--vscode-button-foreground);
+                    border: 1px solid var(--vscode-button-border, transparent);
+                    padding: 4px 8px;
+                    cursor: pointer;
+                }
+                #toolbar button:hover {
+                    background-color: var(--vscode-button-hoverBackground);
+                }
+                iframe {
+                    flex-grow: 1; 
                     width: 100%;
                     margin: 0;
                     padding: 0;
@@ -121,7 +167,48 @@ const url = `http://localhost:${port}`;
             </style>
         </head>
         <body>
-            <iframe src="${url}"></iframe>
+            <div id="toolbar">
+                <button id="history-back"><-</button>
+                <button id="history-forward">-></button>
+            </div>
+            
+            <iframe id="content-iframe" src="${url}"></iframe>
+
+            <script>
+                (function() {
+					const vscode = acquireVsCodeApi();
+
+                    const iframe = document.getElementById('content-iframe');
+                    const backButton = document.getElementById('history-back');
+                    const forwardButton = document.getElementById('history-forward');
+
+                    const targetOrigin = '${url}';
+					const targetIpOrigin = '${ipUrl}';
+
+                    backButton.addEventListener('click', () => {
+                        iframe.contentWindow.postMessage({ command: 'navigateBack' }, targetOrigin);
+						iframe.contentWindow.postMessage({ command: 'navigateBack' }, targetIpOrigin);
+                    });
+
+                    forwardButton.addEventListener('click', () => {
+                        iframe.contentWindow.postMessage({ command: 'navigateForward' }, targetOrigin);
+						iframe.contentWindow.postMessage({ command: 'navigateForward' }, targetIpOrigin);
+                    });
+
+					window.addEventListener('message', event => {
+						if (event.origin !== targetOrigin) {
+							return;
+						}
+						const message = event.data;
+						if (message.command === 'openExternal' && message.url) {
+							vscode.postMessage({ 
+								command: 'openExternal', 
+								url: message.url 
+							});
+						}
+					});
+                }());
+            </script>
         </body>
         </html>
     `;
