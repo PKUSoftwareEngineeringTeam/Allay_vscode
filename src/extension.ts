@@ -22,6 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 		':',  // Triggers tag block completion (e.g., "{:")
         '<',  // Triggers shortcode opening (e.g., "{<")
         '/',  // Triggers shortcode closing (e.g., "{</")
+		'%',  // Triggers comment block completion (e.g., "{%")
         '.',  // Triggers member access (e.g., "site.")
         '"',  // Triggers file path completion (e.g., include "...")
         '$'   // Triggers variable completion inside expressions (e.g., "$var")

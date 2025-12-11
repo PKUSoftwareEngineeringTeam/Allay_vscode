@@ -69,12 +69,12 @@ export class AllayCompletionItemProvider implements vscode.CompletionItemProvide
 
     /**
      * Provides snippet completions for block structures.
-     * Triggered when line ends with "{-", "{:", or "{<".
+     * Triggered when line ends with "{-", "{:", "{<", or "{%".
      */
     private getBlockCompletions(linePrefix: string, position: vscode.Position, document: vscode.TextDocument): vscode.CompletionItem[] | undefined {
         const items: vscode.CompletionItem[] = [];
 
-        // 1. Calculate Range (Targeting ONLY the last character: -, :, or <)
+        // 1. Calculate Range (Targeting ONLY the last character: -, :, <, or %)
         // We assume the opening '{' is already safely on screen.
         const startPos = position.translate(0, -1); 
         let endPos = position;
@@ -170,6 +170,25 @@ export class AllayCompletionItemProvider implements vscode.CompletionItemProvide
             item3.command = retriggerCommand; 
             items.push(item3);
 
+            return items;
+        }
+
+        // 4. Comment Block: {%% ... %%}
+        // Trigger: User typed "%" after "{"
+        if (linePrefix.endsWith('{%')) {
+            const item = new vscode.CompletionItem('{%% comment %%}', vscode.CompletionItemKind.Snippet);
+            item.detail = 'Allay Comment Block';
+            
+            // Insert remaining parts: "%" + cursor + "%}"
+            // Result: {% $0 %}
+            item.insertText = new vscode.SnippetString('% $0 %}');
+            
+            item.range = replaceRange;
+            item.filterText = '%';
+            item.sortText = '001';
+            item.preselect = true;
+
+            items.push(item);
             return items;
         }
 
