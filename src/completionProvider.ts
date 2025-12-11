@@ -208,7 +208,7 @@ export class AllayCompletionItemProvider implements vscode.CompletionItemProvide
      * Common items available in BOTH Command and Expression blocks.
      * Includes: Variables, Built-in Functions, Constants.
      */
-    private getCommonExpressions(document: vscode.TextDocument): vscode.CompletionItem[] {
+    private getCommonExpressions(document: vscode.TextDocument, position: vscode.Position): vscode.CompletionItem[] {
         const items: vscode.CompletionItem[] = [];
 
         // A. Static Built-in Variables
@@ -333,7 +333,7 @@ export class AllayCompletionItemProvider implements vscode.CompletionItemProvide
     }
 
     /**
-     * Scans `allay.toml` for global configuration keys under [Param].
+     * Scans `allay.toml` for global configuration keys under [Params].
      */
     private async getAllayConfigKeys(): Promise<vscode.CompletionItem[]> {
         const items: vscode.CompletionItem[] = [];
@@ -345,8 +345,8 @@ export class AllayCompletionItemProvider implements vscode.CompletionItemProvide
             const doc = await vscode.workspace.openTextDocument(files[0]);
             const text = doc.getText();
             
-            // Simple regex to find the [Param] section content
-            const paramBlockRegex = /\[Param\]([\s\S]*?)(?:\[|$)/i;
+            // Simple regex to find the [Params] section content
+            const paramBlockRegex = /\[Params\]([\s\S]*?)(?:\[|$)/i;
             const match = text.match(paramBlockRegex);
             
             if (match) {
