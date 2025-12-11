@@ -173,10 +173,10 @@ export class AllayCompletionItemProvider implements vscode.CompletionItemProvide
             return items;
         }
 
-        // 4. Comment Block: {%% ... %%}
+        // 4. Comment Block: {% ... %}
         // Trigger: User typed "%" after "{"
         if (linePrefix.endsWith('{%')) {
-            const item = new vscode.CompletionItem('{%% comment %%}', vscode.CompletionItemKind.Snippet);
+            const item = new vscode.CompletionItem('{% comment %}', vscode.CompletionItemKind.Snippet);
             item.detail = 'Allay Comment Block';
             
             // Insert remaining parts: "%" + cursor + "%}"
