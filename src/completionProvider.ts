@@ -44,7 +44,7 @@ export class AllayCompletionItemProvider implements vscode.CompletionItemProvide
         // Regex matches "{-" (empty content) as well, so this will trigger together with Step 0
         if (linePrefix.match(/\{-([^}]*)$/)) {
             const commandKeywords = this.getControlKeywords();
-            const commonExpressions = this.getCommonExpressions(document); 
+            const commonExpressions = this.getCommonExpressions(document, position); 
             allItems.push(...commandKeywords, ...commonExpressions);
         }
 
@@ -52,7 +52,7 @@ export class AllayCompletionItemProvider implements vscode.CompletionItemProvide
         // Strategy: Provide Output Keywords (block) + Common Expressions
         if (linePrefix.match(/\{:([^}]*)$/)) {
             const outputKeywords = this.getOutputKeywords();
-            const commonExpressions = this.getCommonExpressions(document);
+            const commonExpressions = this.getCommonExpressions(document, position);
             allItems.push(...outputKeywords, ...commonExpressions);
         }
 
@@ -210,52 +210,50 @@ export class AllayCompletionItemProvider implements vscode.CompletionItemProvide
      */
     private getCommonExpressions(document: vscode.TextDocument, position: vscode.Position): vscode.CompletionItem[] {
         const items: vscode.CompletionItem[] = [];
+        const range = document.getWordRangeAtPosition(position, /[$a-zA-Z0-9_]+/);
 
-        // A. Static Built-in Variables
         ['this', 'site', 'pages', 'param'].forEach(v => {
             const item = new vscode.CompletionItem(v, vscode.CompletionItemKind.Variable);
             item.detail = 'Allay Built-in Variable';
+            if (range) { item.range = range; }
             items.push(item);
         });
 
-        // B. Constants
         ['null'].forEach(c => {
             const item = new vscode.CompletionItem(c, vscode.CompletionItemKind.Constant);
             item.detail = 'Allay Constant';
+            if (range) { item.range = range; }
             items.push(item);
         });
 
-        // C. Built-in Functions
-        // These are used in {: len x :} AND {- if len(x) -}
         ['len', 'slice', 'append', 'list', 'format_date', 'truncate'].forEach(f => {
             const item = new vscode.CompletionItem(f, vscode.CompletionItemKind.Function);
             item.detail = 'Allay Built-in Function';
+            if (range) { item.range = range; }
             items.push(item);
         });
 
         ['end'].forEach(f => {
             const item = new vscode.CompletionItem(f, vscode.CompletionItemKind.Function);
             item.detail = 'Allay Keyword';
+            if (range) { item.range = range; }
             items.push(item);
         });
 
-        // D. Dynamic User Variables (Scanned from document)
-        // Combines logic for scanning 'set' and 'for'
         const text = document.getText();
-        const existingLabels = new Set(items.map(i => i.label)); // To prevent duplicates
+        const existingLabels = new Set(items.map(i => i.label));
 
-        // Regex for 'set $var' and 'for $var'
         const varRegex = /\{-\s*(?:set|for)\s+([\$a-zA-Z0-9_,\s]+)(?:=|:)/g;
         
         let match;
         while ((match = varRegex.exec(text)) !== null) {
-            // Extract variable part, split by comma, trim
             const vars = match[1].split(',').map(v => v.trim()).filter(v => v.startsWith('$'));
             
             vars.forEach(v => {
                 if (!existingLabels.has(v)) {
                     const item = new vscode.CompletionItem(v, vscode.CompletionItemKind.Variable);
                     item.detail = 'User Defined Variable';
+                    if (range) { item.range = range; }
                     items.push(item);
                     existingLabels.add(v);
                 }
