@@ -324,7 +324,9 @@ export class AllayCompletionItemProvider implements vscode.CompletionItemProvide
     private async getFieldCompletions(parent: string, document: vscode.TextDocument): Promise<vscode.CompletionItem[]> {
         
         if (parent === 'site') {
-            return await this.getAllayConfigKeys();
+            const configKeys =  await this.getAllayConfigKeys();
+            const configMetadata = await this.getAllayConfigMetadata();
+            return [...configKeys, ...configMetadata];
         }
 
         // Matches current page scope (empty string or ending in .page)
@@ -333,6 +335,44 @@ export class AllayCompletionItemProvider implements vscode.CompletionItemProvide
         }
 
         return [];
+    }
+
+    private async getAllayConfigMetadata(): Promise<vscode.CompletionItem[]> {
+        const items: vscode.CompletionItem[] = [];
+        const files = await vscode.workspace.findFiles('allay.toml', null, 1);
+        
+        if (files.length === 0) { return []; }
+
+        try {
+            const doc = await vscode.workspace.openTextDocument(files[0]);
+            const text = doc.getText();
+
+            const lines = text.split(/\r?\n/);
+            const rootLines: string[] = [];
+            
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('[')) {
+                    break;
+                }
+                rootLines.push(line);
+            }
+            
+            const rootContent = rootLines.join('\n');
+
+            const keyRegex = /^\s*([a-zA-Z0-9_-]+)\s*=/gm;
+            let match;
+            
+            while ((match = keyRegex.exec(rootContent)) !== null) {
+                const key = match[1];
+                items.push(this.createFieldItem(key, `Allay config metadata from allay.toml`));
+            }
+
+        } catch (e) {
+            console.error('Error parsing allay.toml root config', e);
+        }
+
+        return items;
     }
 
     /**
