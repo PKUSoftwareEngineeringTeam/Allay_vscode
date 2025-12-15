@@ -331,18 +331,11 @@ export class AllayCompletionItemProvider implements vscode.CompletionItemProvide
     private async getFieldCompletions(parent: string, document: vscode.TextDocument): Promise<vscode.CompletionItem[]> {
         
         if (parent === 'site') {
-            return [
-                this.createFieldItem('param', 'Global configurations from allay.toml'),
-                this.createFieldItem('pages', 'List of all markdown pages')
-            ];
-        }
-
-        if (parent === 'site.param') {
             return await this.getAllayConfigKeys();
         }
 
         // Matches current page scope (empty string or ending in .page)
-        if (parent === '' || parent.endsWith('page')) {
+        if (parent === '' || parent === 'this') {
             return this.getMarkdownPageKeys(document);
         }
 
