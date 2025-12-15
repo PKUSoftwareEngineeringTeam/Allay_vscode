@@ -245,13 +245,6 @@ export class AllayCompletionItemProvider implements vscode.CompletionItemProvide
             items.push(item);
         });
 
-        ['len', 'slice', 'append', 'list', 'format_date', 'truncate'].forEach(f => {
-            const item = new vscode.CompletionItem(f, vscode.CompletionItemKind.Function);
-            item.detail = 'Allay Built-in Function';
-            if (range) { item.range = range; }
-            items.push(item);
-        });
-
         ['end'].forEach(f => {
             const item = new vscode.CompletionItem(f, vscode.CompletionItemKind.Function);
             item.detail = 'Allay Keyword';
