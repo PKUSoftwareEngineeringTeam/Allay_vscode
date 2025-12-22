@@ -19,8 +19,11 @@
     "commands": [
       {
         "command": "allay.preview",
-        "title": "Allay: Open Preview",
-        "icon": "$(eye)"
+        "title": "Allay: Open Preview"
+      },
+      {
+        "command": "allay.restartService",
+        "title": "Allay: Restart Service"
       }
     ],
     "viewsContainers": {
@@ -43,7 +46,7 @@
     "viewsWelcome": [
       {
         "view": "allay-view",
-        "contents": "[Start Preview](command:allay.preview)"
+        "contents": "[Start Preview](command:allay.preview)\n[Restart Service](command:allay.restartService)"
       }
     ],
     "grammars": [
