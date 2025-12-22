@@ -10,6 +10,16 @@ const ALLAY_PORT = 8000;
 
 export function activate(context: vscode.ExtensionContext) {
 
+	// Register an empty TreeDataProvider to create the Allay view
+	vscode.window.registerTreeDataProvider('allay-view', new class implements vscode.TreeDataProvider<vscode.TreeItem> {
+		getTreeItem(element: any): vscode.TreeItem {
+			return element;
+		}
+		getChildren(element?: any): vscode.ProviderResult<vscode.TreeItem[]> {
+			return [];
+		}
+	});
+
 	// Create a log output channel
 	logChannel = vscode.window.createOutputChannel('Allay', { log: true });
 
