@@ -10,6 +10,16 @@ const ALLAY_PORT = 8000;
 
 export function activate(context: vscode.ExtensionContext) {
 
+	// Register an empty TreeDataProvider to create the Allay view
+	vscode.window.registerTreeDataProvider('allay-view', new class implements vscode.TreeDataProvider<vscode.TreeItem> {
+		getTreeItem(element: any): vscode.TreeItem {
+			return element;
+		}
+		getChildren(element?: any): vscode.ProviderResult<vscode.TreeItem[]> {
+			return [];
+		}
+	});
+
 	// Create a log output channel
 	logChannel = vscode.window.createOutputChannel('Allay', { log: true });
 
@@ -28,6 +38,37 @@ export function activate(context: vscode.ExtensionContext) {
         '$'   // Triggers variable completion inside expressions (e.g., "$var")
     );
 	context.subscriptions.push(completionProvider);
+
+	const startService = (projectRoot: string) => {
+		// If a server process is already running, kill it
+		if (serverProcess) {
+			logChannel.info('Killing existing Allay server process.');
+			serverProcess.kill();
+		}
+
+		// Get configuration settings
+		const config = vscode.workspace.getConfiguration('allay');
+
+		// Get the path to the Allay server executable
+		const allayExecutable = config.get<string>('path') || 'allay';
+		vscode.window.showInformationMessage('Using Allay executable at: ' + allayExecutable);
+		logChannel.info('Using Allay executable at: ' + allayExecutable);
+
+		// Start a new Allay server process
+		serverProcess = spawn(allayExecutable, ['--root', projectRoot, 'serve'], {
+			cwd: projectRoot,
+			shell: false // Set to false for security, and because we don't need shell features
+		});
+
+		serverProcess.stdout?.on('data', (data) => {
+			logChannel.info(`Allay stdout: ${data}`);
+		});
+
+		serverProcess.stderr?.on('data', (data) => {
+			logChannel.error(`Allay stderr: ${data}`);
+			vscode.window.showErrorMessage(`Allay error: ${data}`);
+		});
+	};
 
 	const previewCommand = vscode.commands.registerCommand('allay.preview', () => {
 		// Check workspace folder
@@ -63,35 +104,7 @@ export function activate(context: vscode.ExtensionContext) {
 		);
 
 		// Start the Allay server process
-
-		// If a server process is already running, kill it
-		if (serverProcess) {
-			logChannel.info('Killing existing Allay server process.');
-			serverProcess.kill();
-		}
-
-		// Get configuration settings
-		const config = vscode.workspace.getConfiguration('allay');
-
-		// Get the path to the Allay server executable
-		const allayExecutable = config.get<string>('path') || 'allay';
-		vscode.window.showInformationMessage('Using Allay executable at: ' + allayExecutable);
-		logChannel.info('Using Allay executable at: ' + allayExecutable);
-
-		// Start a new Allay server process
-		serverProcess = spawn(allayExecutable, ['--root', projectRoot, 'serve'], {
-			cwd: projectRoot,
-			shell: false // Set to false for security, and because we don't need shell features
-		});
-
-		serverProcess.stdout?.on('data', (data) => {
-			logChannel.info(`Allay stdout: ${data}`);
-		});
-
-		serverProcess.stderr?.on('data', (data) => {
-			logChannel.error(`Allay stderr: ${data}`);
-			vscode.window.showErrorMessage(`Allay error: ${data}`);
-		});
+		startService(projectRoot);
 
 		// Listen message form webview to handle navigation
 		previewPanel.webview.onDidReceiveMessage(
@@ -125,12 +138,34 @@ export function activate(context: vscode.ExtensionContext) {
 
 	});
 
+	const restartCommand = vscode.commands.registerCommand('allay.restartService', () => {
+        if (!serverProcess) {
+            return;
+        } else {
+			serverProcess.kill();
+		}
+
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders || workspaceFolders.length === 0) {
+            return;
+        }
+        const projectRoot = workspaceFolders[0].uri.fsPath;
+
+        startService(projectRoot);
+        vscode.window.showInformationMessage('Allay Service Restarted');
+        
+        if (previewPanel) {
+             previewPanel.webview.html = getWebviewContent(ALLAY_PORT);
+        }
+	});
+
 	context.subscriptions.push(previewCommand);
+	context.subscriptions.push(restartCommand);
 }
 
 function getWebviewContent(port: number): string {
-const url = `http://localhost:${port}`;
-const ipUrl = `http://127.0.0.1:${port}`;
+	const url = `http://localhost:${port}`;
+	const ipUrl = `http://127.0.0.1:${port}`;
     return `
         <!DOCTYPE html>
         <html lang="en">

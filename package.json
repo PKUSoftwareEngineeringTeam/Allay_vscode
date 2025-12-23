@@ -1,5 +1,6 @@
 {
   "name": "allay-vscode",
+  "publisher": "AllayDevelopTeam",
   "displayName": "Allay",
   "description": "Allay blog template language support and live preview",
   "version": "0.0.1",
@@ -18,8 +19,34 @@
     "commands": [
       {
         "command": "allay.preview",
-        "title": "Allay: Open Preview",
-        "icon": "$(eye)"
+        "title": "Allay: Open Preview"
+      },
+      {
+        "command": "allay.restartService",
+        "title": "Allay: Restart Service"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "allay-activity-bar",
+          "title": "Allay",
+          "icon": "./static/allay-white.svg"
+        }
+      ]
+    },
+    "views": {
+      "allay-activity-bar": [
+        {
+          "id": "allay-view",
+          "name": "Allay Control"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "allay-view",
+        "contents": "[Start Preview](command:allay.preview)\n[Restart Service](command:allay.restartService)"
       }
     ],
     "grammars": [
@@ -32,15 +59,6 @@
         ]
       }
     ],
-    "menus": {
-      "editor/title": [
-        {
-          "command": "allay.preview",
-          "when": "editorLangId == markdown || editorLangId == html",
-          "group": "navigation"
-        }
-      ]
-    },
     "configuration": {
       "title": "Allay",
       "properties": {
