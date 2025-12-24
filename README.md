@@ -1,71 +1,49 @@
-# allay-vscode README
+# Allay for VS Code
 
-This is the README for your extension "allay-vscode". After writing up a brief description, we recommend including the following sections.
+VS Code support for the [Allay](https://github.com/pkusoftwareengineeringteam/allay) blog template language. This extension provides syntax highlighting, IntelliSense, and a live preview feature to make template development easier and more efficient.
 
-## Features
+## ✨ Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+### 1. Syntax Highlighting
+Provides syntax highlighting for Allay code blocks in `.html` and `.markdown` files, including:
+* **Command Blocks**: `{- set $var = ... -}`
+* **Expression Blocks**: `{: $var :}`
+* **Shortcodes**: `{< tag ... >}`
 
-For example if there is an image subfolder under your extension project workspace:
+### 2. IntelliSense
+Context-aware code completion to boost your productivity:
+* **Code Blocks**: Automatically closes tags when you type `{-`, `{:`, ` {<`, or `{%`.
+* **Keywords**: Completion for control keywords like `if`, `for`, `set`, `include`, `extends`, etc.
+* **Variables**:
+    * Built-in variables: `site`, `this`, `pages`, `param`.
+    * Custom variables: Automatically scans variables defined via `set` and `for` in the current context.
+    * Front-matter: Automatically recognizes YAML front-matter fields in the current page.
+    * Configuration: Reads fields from `allay.toml`.
+* **Paths**: Auto-completion for file paths in `templates/` directory when using `include` or `extends`.
+* **Shortcodes**: Scans and suggests components from the `shortcodes/` directory.
 
-\!\[feature X\]\(images/feature-x.png\)
+### 3. Live Preview
+Real-time preview of your Allay templates directly within VS Code.
+* **Integrated View**: View the rendered page side-by-side with your code.
+* **Auto-Refresh**: The preview automatically updates as you edit your templates.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
+## ⚙️ Extension Settings
 
 This extension contributes the following settings:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+* `allay.path`: Specifies the file path to the `allay` executable.
+    * **Default**: `allay` (assumes Allay is in your system's PATH environment variable).
+    * If Allay is not in your PATH, please provide the full absolute path (e.g., `D:/bin/allay.exe` or `/usr/local/bin/allay`).
 
-## Known Issues
+## 🚀 Usage
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+1.  Ensure you have the [Allay CLI](https://github.com/pkusoftwareengineeringteam/allay) installed and configured (or set the path in extension settings).
+2.  Open your Allay blog project folder in VS Code.
+3.  Click the **Allay** icon in the **Activity Bar** (the navigation bar on the far left).
+4.  Click the **Start Preview** button in the view that appears.
 
-## Release Notes
+## 📝 Known Issues
 
-Users appreciate release notes as you update your extension.
+## 📅 Change Log
 
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+See [CHANGELOG.md](CHANGELOG.md)
