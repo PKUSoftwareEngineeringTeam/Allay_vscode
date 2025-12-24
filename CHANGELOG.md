@@ -4,7 +4,12 @@ All notable changes to the "allay-vscode" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [0.0.1] - 2024-05-20
+## [0.0.2] - 2025-12-24
+
+### Added
+- Added extension icon.
+
+## [0.0.1] - 2025-12-24
 
 ### Added
 - Initial release of Allay VS Code extension.
