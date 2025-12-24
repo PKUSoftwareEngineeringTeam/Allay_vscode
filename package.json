@@ -1,6 +1,6 @@
 {
   "name": "allay-vscode",
-  "publisher": "AllayDevelopTeam",
+  "publisher": "AllayDevTeam",
   "displayName": "Allay",
   "description": "Allay blog template language support and live preview",
   "version": "0.0.1",
