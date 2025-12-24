@@ -3,8 +3,9 @@
   "publisher": "AllayDevTeam",
   "displayName": "Allay",
   "description": "Allay blog template language support and live preview",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license":"Apache-2.0",
+  "icon": "./static/allay.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/PKUSoftwareEngineeringTeam/Allay_vscode.git"
